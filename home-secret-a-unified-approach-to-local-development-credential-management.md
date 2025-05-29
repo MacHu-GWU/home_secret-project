@@ -35,7 +35,7 @@ The consequences of inadequate credential management extend beyond inconvenience
 
 HOME Secret emerges as a response to these challenges—a comprehensive local credential management system built on structured JSON configuration and intelligent Python integration. This approach transforms credential management from a necessary evil into a streamlined development asset.
 
-> We have released a Python library implementing these best practices, enabling one-click installation and immediate adoption.
+> We have released a [home_secret](https://github.com/MacHu-GWU/home_secret-project) Python library implementing these best practices, enabling one-click installation and immediate adoption.
 
 ## Current Challenges: Analyzing Existing Credential Management Methods
 
