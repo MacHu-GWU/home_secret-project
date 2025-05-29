@@ -71,7 +71,7 @@ The home folder method represents one of the earliest systematic approaches to c
 
 Using this approach, developers create hierarchical file structures like:
 
-```
+```bash
 ${HOME}/.github/personal/
     ├── read-only.txt
     ├── read-and-write.txt
@@ -88,7 +88,7 @@ ${HOME}/.github/company_2/
 
 Code references require constructing complex paths:
 
-```
+```python
 from pathlib import Path
 dir_home = Path.home()
 token = dir_home.joinpath(".github", "personal", "read-only.txt").read_text()
@@ -102,7 +102,7 @@ More fundamentally, this approach lacks systematic naming conventions and docume
 
 Environment variable files gained popularity due to their simplicity and widespread tooling support. A typical implementation appears straightforward:
 
-```
+```bash
 MY_DB_USERNAME=a1b2c3d4
 MY_DB_PASSWORD=x1y2z3
 GITHUB_API_TOKEN=ghp_example123
@@ -138,7 +138,7 @@ HOME Secret fundamentally reconceptualizes local credential management by establ
 
 The solution rests on three foundational principles that differentiate it from traditional approaches:
 
-- **Centralized Architecture**: All sensitive information consolidates into a single `$HOME/home_secret.json` file, eliminating the complexity and maintenance overhead of distributed credential storage.
+- **Centralized Architecture**: All sensitive information consolidates into a single`$HOME/home_secret.json`file, eliminating the complexity and maintenance overhead of distributed credential storage.
 - **Security-First Design**: All code references use non-sensitive aliases, ensuring that even code inspection cannot reveal meaningful credential information or access patterns.
 - **Developer-Centric Integration**: Auto-generated enumeration classes and IDE integration transform credential access from a memorization exercise into an intuitive, type-safe operation.
 
@@ -146,7 +146,7 @@ The solution rests on three foundational principles that differentiate it from t
 
 HOME Secret employs a carefully architected hierarchical structure that mirrors real-world organizational patterns while providing maximum flexibility:
 
-```
+```python
 {
     "providers": {
         "example_provider": {
@@ -207,7 +207,7 @@ The architecture's flexibility allows complete customization—all fields remain
 
 For concrete illustration, GitHub token management using this structure would appear as:
 
-```
+```python
 {
     "providers": {
         "github": {
@@ -244,24 +244,24 @@ For concrete illustration, GitHub token management using this structure would ap
 
 HOME Secret's security architecture centers on a sophisticated alias mechanism that provides multiple layers of protection while maintaining usability:
 
-- **Code-Level Security**: Source code references use semantic alias paths like `github.personal.read_token`, ensuring that code inspection reveals no sensitive account information, server endpoints, or access patterns.
+- **Code-Level Security**: Source code references use semantic alias paths like`github.personal.read_token`, ensuring that code inspection reveals no sensitive account information, server endpoints, or access patterns.
 - **Structural Information Isolation**: Actual credentials appear only in JSON leaf nodes, while all navigational paths consist of non-sensitive aliases. This design ensures that even configuration file structure exposure doesn't leak critical identity information.
 - **Contextual Security Balance**: Description fields and custom attributes provide sufficient contextual information for maintenance and understanding without including sensitive data in the structural elements, achieving optimal security-usability balance.
 
 ### Python Integration: Seamless Code Integration
 
-HOME Secret achieves development workflow integration through a carefully designed Python interface that prioritizes both simplicity and performance. The core `home_secret.py` script provides a singleton `HomeSecret()` object with two primary access patterns:
+HOME Secret achieves development workflow integration through a carefully designed Python interface that prioritizes both simplicity and performance. The core`home_secret.py`script provides a singleton`HomeSecret()`object with two primary access patterns:
 
 **Direct Access Pattern**:
 
-```
+```python
 # get password
 api_key = hs.v("providers.github.accounts.al.users.al.secrets.full_repo_access.value")
 ```
 
 **Token Pattern**:
 
-```
+```python
 # create lazy load token
 token = hs.t("providers.github.accounts.al.users.al.secrets.full_repo_access.value")
 # get value now
@@ -272,7 +272,7 @@ The token pattern particularly benefits complex applications by enabling credent
 
 The most innovative feature is automatic enumeration class generation. By analyzing the JSON structure, the system creates IDE-friendly access interfaces:
 
-```
+```python
 class Secret:
     github__accounts__al__users__al__secrets__full_repo_access__value = hs.t("providers.github.accounts.al.users.al.secrets.full_repo_access.value")
     # 更多自动生成的属性...
@@ -280,11 +280,9 @@ class Secret:
 
 This approach combines the benefits of static typing with dynamic configuration, providing complete IDE auto-completion support while eliminating manual maintenance of credential references.
 
-![](https://sanhehu.atlassian.net/wiki/images/icons/grey_arrow_down.png)
+content of ``home_secret.py``:
 
-home\_secret.py
-
-```
+```python
 # -*- coding: utf-8 -*-
 
 """
@@ -706,7 +704,7 @@ HOME Secret's technical implementation embodies modern software development best
 The system implements sophisticated lazy loading to optimize performance characteristics, particularly valuable when handling large credential configurations:
 
 - **Deferred File Operations**: JSON files are parsed only when credentials are first accessed, not during module import. Applications that don't access credentials in certain execution paths incur zero file I/O overhead.
-- **Value-Level Lazy Loading**: Even after JSON loading, specific credential values are extracted only when accessed through the `.v` property, enabling efficient token object creation without performance penalties.
+- **Value-Level Lazy Loading**: Even after JSON loading, specific credential values are extracted only when accessed through the`.v`property, enabling efficient token object creation without performance penalties.
 - **Intelligent Caching**: Once files are read or values parsed, results are cached for subsequent access, eliminating redundant file operations and JSON processing overhead.
 
 This architecture enables HOME Secret to efficiently manage large configurations containing hundreds of credential entries while maintaining excellent application startup performance.
@@ -719,7 +717,7 @@ HOME Secret implements an intelligent dual-file synchronization strategy that se
 -   `${PROJECT_DIR}/home_secret.json`: Development-time configuration source (excluded from version control
 -   `${HOME}/home_secret.json`: Runtime configuration target (where applications read credentials)
 - **Automatic Synchronization Logic**: When the system detects a project-level configuration file, it automatically propagates changes to the home directory runtime file, ensuring development modifications take immediate effect without manual intervention.
-- **Cross-Project Configuration Sharing**: Since all applications ultimately read from `${HOME}/home_secret.json`, different projects automatically share credential configurations, eliminating duplicate maintenance overhead.
+- **Cross-Project Configuration Sharing**: Since all applications ultimately read from`${HOME}/home_secret.json`, different projects automatically share credential configurations, eliminating duplicate maintenance overhead.
 
 This synchronization strategy ensures configuration consistency while providing development workflow flexibility.
 
@@ -727,7 +725,7 @@ This synchronization strategy ensures configuration consistency while providing 
 
 The path resolution mechanism supports intuitive dot-notation navigation with robust error handling:
 
-```
+```python
 # deep get
 admin_email = hs.v("providers.github.accounts.my_company.admin_email")
 read_only_token = hs.t("providers.github.accounts.my_company.users.my_user.secrets.read_only.value")
@@ -742,7 +740,7 @@ read_only_token = hs.t("providers.github.accounts.my_company.users.my_user.secre
 Automatic code generation represents HOME Secret's most innovative feature, creating developer-optimized interfaces through JSON structure analysis:
 
 - **Comprehensive Path Discovery**: The system uses depth-first traversal to identify all value-containing paths while intelligently filtering metadata fields and placeholder values.
-- **Python-Compatible Identifier Generation**: JSON paths are converted to valid Python identifiers (e.g., `providers.github.accounts.company` becomes `github__accounts__company`), ensuring generated code follows Python naming conventions.
+- **Python-Compatible Identifier Generation**: JSON paths are converted to valid Python identifiers (e.g.,`providers.github.accounts.company`becomes`github__accounts__company`), ensuring generated code follows Python naming conventions.
 - **Template-Based Code Generation**: Predefined templates generate complete Python class files with proper imports, class definitions, and validation functions, ensuring generated code maintains high structural quality.
 - **IDE Optimization**: Generated enumeration classes provide complete static type information, enabling modern IDEs to deliver accurate auto-completion, type checking, and refactoring support.
 
@@ -752,9 +750,9 @@ This generation mechanism dramatically reduces manual maintenance overhead while
 
 Moving from theory to practice, let's implement HOME Secret through a concrete GitHub credential management scenario that demonstrates the system's practical benefits.
 
-Begin by creating the foundational `home_secret.json` configuration file with a realistic GitHub token management structure:
+Begin by creating the foundational ``home_secret.json`` configuration file with a realistic GitHub token management structure:
 
-```
+```python
 {
     "providers": {
         "github": {
@@ -787,17 +785,17 @@ Begin by creating the foundational `home_secret.json` configuration file with 
 }
 ```
 
-This configuration demonstrates HOME Secret's structural principles in practice. Notice how semantic aliases (`personal`, `al`) replace sensitive identifiers while description fields maintain necessary contextual information.
+This configuration demonstrates HOME Secret's structural principles in practice. Notice how semantic aliases (`personal`,`al`) replace sensitive identifiers while description fields maintain necessary contextual information.
 
-Next, deploy the HOME Secret Python script as `home_secret.py` and execute the enumeration class generation:
+Next, deploy the HOME Secret Python script as`home_secret.py`and execute the enumeration class generation:
 
-```
+```bash
 python home_secret.py
 ```
 
-The system automatically generates `home_secret_enum.py` containing IDE-friendly access interfaces:
+The system automatically generates`home_secret_enum.py`containing IDE-friendly access interfaces:
 
-```
+```python
 class Secret:
     github__accounts__personal__users__al__full_repo_access = hs.t("providers.github.accounts.personal.users.al.secrets.full_repo_access.value")
 
@@ -838,7 +836,7 @@ Configuration synchronization transforms from complex multi-file coordination to
 
 HOME Secret's security architecture transcends basic "don't hardcode credentials" guidance, implementing comprehensive protection through systematic alias usage.
 
-- **Complete Code-Level Anonymity**: Source code contains only semantic alias references like `github.accounts.personal.users.al.secrets.full_repo_access.value`. Even comprehensive code inspection reveals no actionable sensitive information.
+- **Complete Code-Level Anonymity**: Source code contains only semantic alias references like`github.accounts.personal.users.al.secrets.full_repo_access.value`. Even comprehensive code inspection reveals no actionable sensitive information.
 - **Structured Information Compartmentalization**: Sensitive data exists exclusively in JSON leaf nodes, while navigation paths consist entirely of non-sensitive aliases. Configuration structure exposure cannot compromise actual credentials or identity information.
 - **Contextual Information Balance**: Description fields and custom attributes provide necessary operational context without including sensitive information in structural elements, achieving optimal security-maintainability equilibrium.
 
@@ -846,7 +844,7 @@ HOME Secret's security architecture transcends basic "don't hardcode credentials
 
 HOME Secret prioritizes modern development workflows through deep IDE integration that transforms credential usage patterns.
 
-- **Comprehensive Auto-Completion**: Generated enumeration classes enable complete IDE auto-completion functionality. Typing `Secret.` displays all available credential references, eliminating memorization requirements and reducing input errors.
+- **Comprehensive Auto-Completion**: Generated enumeration classes enable complete IDE auto-completion functionality. Typing`Secret.`displays all available credential references, eliminating memorization requirements and reducing input errors.
 - **Static Type Safety**: Enumeration classes provide compile-time type information, enabling IDEs to validate reference correctness before runtime and prevent configuration-related runtime failures.
 - **Refactoring Integration**: Configuration restructuring requires only JSON modification and enumeration class regeneration. IDE refactoring tools can then update all code references automatically.
 - **Enhanced Error Diagnostics**: Detailed path validation and error reporting, combined with IDE error highlighting, enable rapid problem identification and resolution.
@@ -863,7 +861,7 @@ HOME Secret establishes a consistent conceptual framework that scales from simpl
 
 HOME Secret represents a fundamental evolution in local development credential management, addressing both technical limitations and conceptual shortcomings of traditional approaches. This solution doesn't merely improve existing methods—it establishes an entirely new paradigm that prioritizes systematic organization, comprehensive security, and exceptional developer experience.
 
-The system's core value proposition manifests across three critical dimensions: **Complexity Simplification**, **Security Enhancement**, and **Efficiency Optimization**. By unifying fragmented credential configurations into structured systems, protecting sensitive information through sophisticated alias mechanisms, and providing seamless automation tools, HOME Secret transforms credential management from operational overhead into development advantage.
+The system's core value proposition manifests across three critical dimensions:**Complexity Simplification**,**Security Enhancement**, and**Efficiency Optimization**. By unifying fragmented credential configurations into structured systems, protecting sensitive information through sophisticated alias mechanisms, and providing seamless automation tools, HOME Secret transforms credential management from operational overhead into development advantage.
 
 For developers and organizations seeking systematic credential management solutions, HOME Secret offers an immediately deployable, battle-tested approach. Its architecture accommodates diverse requirements from individual developers to large enterprise teams while scaling naturally with organizational growth.
 
